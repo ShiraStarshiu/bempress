@@ -1,0 +1,11 @@
+.idea
+.settings
+.project
+.borschik
+
+libs
+node_modules
+.bem/tmp
+bundles/index/*.*
+!bundles/index/*.bemdecl.js
+!bundles/index/*.bemjson.js

@@ -1,0 +1,17 @@
+block('root').def()(function() {
+
+    var data = this.ctx.data;
+
+    return applyCtx(
+        { data: data },
+        {
+            block: 'page',
+            head: [
+                { elem: 'css', url: '/index/index.css' }
+            ],
+            content: [
+                { block: data.view },
+                { elem: 'js', url: '/index/index.js' }
+            ]
+        });
+});
