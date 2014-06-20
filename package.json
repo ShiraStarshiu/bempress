@@ -18,6 +18,7 @@
         "vow-fs": "*",
         "vow": "*",
         "enb-modules": "0.0.14",
-        "enb-diverse-js": "*"
+        "enb-diverse-js": "*",
+        "enb-borschik": "1.0.4"
     }
 }

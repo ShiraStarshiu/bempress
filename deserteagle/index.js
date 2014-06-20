@@ -1,27 +1,27 @@
 var VM = require('vm'),
     vow = require('vow'),
-    VowFs = require('vow-fs');
+    VowFs = require('vow-fs'),
+    path = require('path'),
+    settings = {};
 
-function make(options, data) {
-    var path = options.path;
-
-    if ('development' == options.env) {
-        return rebuild(path)
+function make(bundlePath, settings) {
+    if ('development' == settings.env) {
+        return rebuild(bundlePath)
             .then(function() {
-                return compileCtx(path);
+                return compileCtx(bundlePath);
             })
             .then(function(templates) {
-                return apply(templates.BEMTREE, templates.BEMHTML).call(null, data);
+                return apply(templates.BEMTREE, templates.BEMHTML).call(null, settings.data);
             });
     } else {
-        return compileCtx(path)
+        return compileCtx(bundlePath)
             .then(function(templates) {
-                return apply(templates.BEMTREE, templates.BEMHTML).call(null, data);
+                return apply(templates.BEMTREE, templates.BEMHTML).call(null, settings.data);
             });
     }
 }
 
-function compileCtx(path) {
+function compileCtx(bundlePath) {
     var targets = [
             '.bemtree.js',
             '.bemhtml.js'
@@ -29,7 +29,7 @@ function compileCtx(path) {
         ctx = { Vow: vow };
 
     return vow.all(targets.map(function(target) {
-            return VowFs.read(path + target, 'utf-8');
+            return VowFs.read(bundlePath + target, 'utf-8');
         }))
         .then(function(targetSources) {
             targetSources.forEach(function(targetSource) {
@@ -40,7 +40,7 @@ function compileCtx(path) {
         });
 }
 
-function rebuild(path) {
+function rebuild(bundlePath) {
     var enbBuilder = require('enb/lib/server/server-middleware').createBuilder();
 
     return vow.all([
@@ -49,7 +49,7 @@ function rebuild(path) {
         '.css',
         '.js'
     ].map(function(target) {
-        return enbBuilder(path + target);
+        return enbBuilder(bundlePath + target);
     }));
 }
 
@@ -62,12 +62,53 @@ function apply(BEMTREE, BEMHTML) {
     };
 }
 
-exports.render = function(options, data, fn) {
-    make(options, data)
+function getSettings(name) {
+    return name ?
+        settings[name] :
+        settings;
+}
+
+function render(fullPath, settings, fn) {
+    var bundleName = path.basename(fullPath, '.bemdecl.js'),
+        views = path.basename(settings.settings.views),
+        bundlePath = path.join(views, bundleName, bundleName);
+
+    make(bundlePath, settings)
         .then(function(html) {
             fn(null, html);
         })
         .fail(function(err) {
-            fn(err);
+            'development' == settings.env ?
+                fn(err) :
+                fn('404 O_o');
         });
+}
+
+function middleware(req, res, next) {
+    var render = res.render;
+
+    res.render = function(bundle, view, data) {
+        if (!data) {
+            data = view || {};
+            view = bundle;
+            bundle = getSettings('default');
+        }
+
+        data.view = view;
+
+        render.call(this, bundle, { data: data });
+    };
+
+    next();
+}
+
+module.exports = {
+    init: function(app, params) {
+        settings = params;
+
+        app.use(middleware);
+        app.set('views', path.join(__dirname, '..', settings.path));
+        app.set('view engine', settings.file);
+        app.engine(settings.file, render);
+    }
 };

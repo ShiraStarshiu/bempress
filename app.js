@@ -1,19 +1,13 @@
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var favicon = require('static-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var deserteagle = require('./deserteagle');
-
-//var routes = require('./routes');
-
-var app = express();
-
-// view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
+var express = require('express'),
+    http = require('http'),
+    path = require('path'),
+    favicon = require('static-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
+    deserteagle = require('./deserteagle'),
+    routes = require('./routes'),
+    app = express();
 
 app.use(favicon());
 app.use(logger('dev'));
@@ -21,20 +15,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'bundles')));
+deserteagle.init(app, {
+    file: 'bemdecl.js',
+    path: 'bundles',
+    default: 'index'
+});
 app.use(app.router);
 
-app.get('/', function(req, res) {
-    deserteagle.render(
-        { path: "bundles/index/index", env: 'development' },
-        { view: 'index' }, function(err, html) {
-
-        if (err) {
-            res.send(err);
-        } else {
-            res.send(html);
-        }
-    });
-});
+app.get('/', routes.index);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
@@ -54,8 +42,6 @@ if (app.get('env') === 'development') {
             error: err
         });
     });
-
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 }
 
 // production error handler

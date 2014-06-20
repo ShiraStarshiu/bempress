@@ -15,7 +15,8 @@ module.exports = function(config) {
         nodeConfig.mode('development', function(nodeConfig) {
             nodeConfig.addTechs([
                 [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
-                [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ],
+//                [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ],
+                [ require('enb-borschik/techs/borschik'), { freeze: true, minify: true, sourceTarget: '?.css', destTarget: '_?.css' } ],
                 [ require("enb/techs/file-copy"), { sourceTarget: "?.bemhtml.js", destTarget: "_?.bemhtml.js" } ],
                 [ require("enb/techs/file-copy"), { sourceTarget: "?.bemtree.js", destTarget: "_?.bemtree.js" } ]
             ]);

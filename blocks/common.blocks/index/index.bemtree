@@ -1,1 +1,1 @@
-block('index').content()(this.data.view);
+block('index').content()(this.data.message);
