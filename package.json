@@ -13,12 +13,12 @@
         "body-parser": "~1.0.0",
         "debug": "~0.7.4",
         "jade": "~1.3.0",
-        "enb": "*",
-        "enb-bemxjst": "*",
-        "vow-fs": "*",
-        "vow": "*",
+        "enb": "0.13.4",
+        "enb-bemxjst": "1.2.0",
+        "vow-fs": "0.3.2",
+        "vow": "0.3.13",
         "enb-modules": "0.0.14",
-        "enb-diverse-js": "*",
+        "enb-diverse-js": "0.1.0",
         "enb-borschik": "1.0.4"
     }
 }

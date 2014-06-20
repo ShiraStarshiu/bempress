@@ -5,7 +5,7 @@ var VM = require('vm'),
     settings = {};
 
 function make(bundlePath, settings) {
-    if ('development' == settings.env) {
+    if ('development' == settings.settings.env) {
         return rebuild(bundlePath)
             .then(function() {
                 return compileCtx(bundlePath);
@@ -78,7 +78,7 @@ function render(fullPath, settings, fn) {
             fn(null, html);
         })
         .fail(function(err) {
-            'development' == settings.env ?
+            'development' == settings.settings.env ?
                 fn(err) :
                 fn('404 O_o');
         });
@@ -106,9 +106,9 @@ module.exports = {
     init: function(app, params) {
         settings = params;
 
-        app.use(middleware);
         app.set('views', path.join(__dirname, '..', settings.path));
         app.set('view engine', settings.file);
         app.engine(settings.file, render);
+        app.use(middleware);
     }
 };

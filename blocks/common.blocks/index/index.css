@@ -1,10 +1,4 @@
 .index
 {
-    color: red;
-}
-
-.index:after
-{
-    content: '';
-    background-image: url(./ua.png);
+    font-weight: bold;
 }
