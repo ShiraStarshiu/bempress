@@ -1,5 +1,7 @@
+var path = require('path');
+
 module.exports = function(config) {
-    config.node('bundles/index', function(nodeConfig) {
+    config.node(path.join('bundles', 'index'), function(nodeConfig) {
         nodeConfig.addTechs([
             [ require('enb/techs/levels'), { levels: getLevels(config) } ],
             [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
